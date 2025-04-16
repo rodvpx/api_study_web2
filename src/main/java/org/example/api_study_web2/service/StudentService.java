@@ -1,10 +1,13 @@
 package org.example.api_study_web2.service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import org.example.api_study_web2.dto.StudentDTO;
+import org.example.api_study_web2.data.DataMapper;
+import org.example.api_study_web2.data.StudentInput;
+import org.example.api_study_web2.data.StudentOutput;
 import org.example.api_study_web2.exception.StudentNotFoundException;
 import org.example.api_study_web2.model.Student;
 import org.example.api_study_web2.repository.StudentRepository;
@@ -18,45 +21,47 @@ public class StudentService {
     private StudentRepository repository;
     private Logger logger = Logger.getLogger(StudentService.class.getName());
 
-    public StudentDTO saveStudent(StudentDTO dto) {
-        // Converte DTO para Entidade
-        Student student = new Student();
-        student.setFirstName(dto.firstName());
-        student.setLastName(dto.lastName());
-        student.setAddress(dto.address());
-        student.setGender(dto.gender());
+    public StudentOutput createStudent(StudentInput studentInput) {
+        logger.info("Salvando Usúario");
 
-        // Salva a entidade
-        repository.save(student);
+        var entity = DataMapper.parseObject(studentInput, Student.class);
 
-        // Converte de volta para DTO e retorna
-        return new StudentDTO(student.getFirstName(), student.getLastName(),
-                student.getAddress(), student.getGender());
+        var student = repository.save(entity);
+        return DataMapper.parseObject(student, StudentOutput.class);
     }
 
-    public Student getStudentById(UUID id) {
-        logger.info("Retornando um aluno");
-        return repository.findById(id).orElseThrow(() -> new StudentNotFoundException("Aluno não encontrado com ID: " + id));
+    public StudentOutput findById(UUID id) {
+        logger.info("Procurando aluno");
+        var student = repository.findById(id)
+                .orElseThrow(() -> new StudentNotFoundException("Aluno não encontrado com id " + id));
+        return DataMapper.parseObject(student, StudentOutput.class);
     }
 
-    public List<Student> getAllStudents() {
-        logger.info("Retornando todos os aluno");
-        return repository.findAll();
+    public List<StudentOutput> getAllStudents() {
+        logger.info("Retornando Lista de Studentes");
+
+        List<Student> students = repository.findAll();
+        return DataMapper.parseListObjects(students, StudentOutput.class);
     }
 
-    public Student updateStudent(Student student) {
-        logger.info("Salvando um aluno");
-        Student entity = repository.findById(student.getId()).orElseThrow(() -> new StudentNotFoundException("Aluno não encontrado com ID: " + student.getId()));
-        entity.setFirstName(student.getFirstName());
-        entity.setLastName(student.getLastName());
-        entity.setGender(student.getGender());
-        entity.setAddress(student.getAddress());
-        return repository.save(entity);
+    public StudentOutput updateStudent(UUID id, StudentInput studentInput) {
+        logger.info("Atualizando aluno");
+
+        var entity = repository.findById(id).orElseThrow(() -> new StudentNotFoundException("Aluno não encontrado com id " + id));
+
+        entity.setFirstName(studentInput.firstName());
+        entity.setLastName(studentInput.lastName());
+        entity.setGender(studentInput.gender());
+        entity.setAddress(studentInput.address());
+
+        var student = repository.save(entity);
+        return DataMapper.parseObject(student, StudentOutput.class);
+
     }
 
     public void deleteStudent(UUID id) {
-        logger.info("Deletando um aluno");
-        Student entity = repository.findById(id).orElseThrow(() -> new StudentNotFoundException("Aluno não encontrado com ID: " + id));
+        logger.info("Deletando aluno");
+        var entity = repository.findById(id).orElseThrow(() -> new StudentNotFoundException("Aluno não encontrado com id " + id));
         repository.delete(entity);
     }
 }

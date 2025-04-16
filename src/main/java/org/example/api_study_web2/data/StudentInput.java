@@ -1,8 +1,6 @@
-package org.example.api_study_web2.dto;
+package org.example.api_study_web2.data;
 
-import java.util.UUID;
-
-public record StudentDTO(
+public record StudentInput(
         String firstName,
         String lastName,
         String address,
