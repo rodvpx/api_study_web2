@@ -1,29 +1,20 @@
 package org.example.api_study_web2.data;
 
-import org.modelmapper.ModelMapper;
+import org.example.api_study_web2.model.Student;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class DataMapper {
+@Mapper(componentModel = "spring")
+public interface DataMapper {
 
+    DataMapper INSTANCE = Mappers.getMapper(DataMapper.class);
 
-    // Podemos usar qualquer Mapper
-    //private static Mapper mapper = DozerBeanMapperBuilder.buildDefault();
-    private static ModelMapper mapper = new ModelMapper();
+    Student toEntity(StudentInput input);
 
-    // mapeamento genérica
-    public static <O, D> D parseObject(O origin, Class<D> destination) {
-        return mapper.map(origin, destination);
+    StudentOutput toOutput(Student student);
 
-    }
+    List<StudentOutput> toOutput(List<Student> students);
 
-    // mapeamento genérica
-    public static <O, D> List<D> parseListObjects(List<O> origin, Class<D> destination) {
-        List<D> destinationObjects = new ArrayList<D>();
-        for (O o : origin) {
-            destinationObjects.add(mapper.map(o, destination));
-        }
-        return destinationObjects;
-    }
 }

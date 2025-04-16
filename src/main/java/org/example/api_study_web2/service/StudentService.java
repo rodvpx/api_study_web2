@@ -1,7 +1,6 @@
 package org.example.api_study_web2.service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -19,29 +18,34 @@ public class StudentService {
 
     @Autowired
     private StudentRepository repository;
+
+    @Autowired
+    private DataMapper mapper;
+
     private Logger logger = Logger.getLogger(StudentService.class.getName());
+
 
     public StudentOutput createStudent(StudentInput studentInput) {
         logger.info("Salvando Usúario");
 
-        var entity = DataMapper.parseObject(studentInput, Student.class);
-
+        var entity = mapper.toEntity(studentInput);
         var student = repository.save(entity);
-        return DataMapper.parseObject(student, StudentOutput.class);
+
+        return mapper.toOutput(student);
     }
 
     public StudentOutput findById(UUID id) {
         logger.info("Procurando aluno");
         var student = repository.findById(id)
                 .orElseThrow(() -> new StudentNotFoundException("Aluno não encontrado com id " + id));
-        return DataMapper.parseObject(student, StudentOutput.class);
+        return mapper.toOutput(student);
     }
 
     public List<StudentOutput> getAllStudents() {
         logger.info("Retornando Lista de Studentes");
 
         List<Student> students = repository.findAll();
-        return DataMapper.parseListObjects(students, StudentOutput.class);
+        return mapper.toOutput(students);
     }
 
     public StudentOutput updateStudent(UUID id, StudentInput studentInput) {
@@ -55,7 +59,7 @@ public class StudentService {
         entity.setAddress(studentInput.address());
 
         var student = repository.save(entity);
-        return DataMapper.parseObject(student, StudentOutput.class);
+        return mapper.toOutput(student);
 
     }
 

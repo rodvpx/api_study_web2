@@ -1,9 +1,6 @@
 package org.example.api_study_web2.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -15,13 +12,9 @@ public class Student implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @NotBlank
     private String firstName;
-    @NotBlank
     private String lastName;
-    @NotBlank
     private String address;
-    @NotBlank
     private String gender;
 
     public Student() {

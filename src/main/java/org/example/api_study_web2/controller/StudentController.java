@@ -1,5 +1,6 @@
 package org.example.api_study_web2.controller;
 
+import jakarta.validation.Valid;
 import org.example.api_study_web2.data.StudentInput;
 import org.example.api_study_web2.data.StudentOutput;
 import org.example.api_study_web2.service.StudentService;
@@ -19,12 +20,12 @@ public class StudentController {
     private StudentService studentService;
 
     @PostMapping("/save")
-    public ResponseEntity<StudentOutput> save(@RequestBody StudentInput studentInput) {
+    public ResponseEntity<StudentOutput> save(@Valid @RequestBody StudentInput studentInput) {
         return ResponseEntity.status(HttpStatus.CREATED).body(studentService.createStudent(studentInput));
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<StudentOutput> update(@PathVariable UUID id, @RequestBody StudentInput studentInput) {
+    public ResponseEntity<StudentOutput> update(@PathVariable UUID id, @Valid @RequestBody StudentInput studentInput) {
         return ResponseEntity.status(HttpStatus.OK).body(studentService.updateStudent(id, studentInput));
     }
 
@@ -44,6 +45,4 @@ public class StudentController {
         studentService.deleteStudent(id);
         return ResponseEntity.noContent().build(); // 204 No Content
     }
-
-
 }
